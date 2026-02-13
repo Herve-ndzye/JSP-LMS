@@ -7,10 +7,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Management System - Staff</title>
+    <title>Staff - LibraryHub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -19,171 +19,228 @@
         }
 
         :root {
-            --primary: #1e40af;
-            --primary-light: #3b82f6;
-            --primary-dark: #1e3a8a;
-            --accent: #0891b2;
-            --success: #059669;
-            --warning: #d97706;
-            --danger: #dc2626;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --bg-light: #f8fafc;
-            --bg-white: #ffffff;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --accent: #14b8a6;
+            --success: #10b981;
+            --danger: #ef4444;
+            
+            --dark: #0f172a;
+            --text: #334155;
+            --text-light: #64748b;
+            
+            --bg: #f8fafc;
+            --bg-card: #ffffff;
             --border: #e2e8f0;
-            --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1);
-        }
-
-        html {
-            scroll-behavior: smooth;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background-color: var(--bg-light);
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.7;
+            color: var(--text);
+            background: var(--bg);
             overflow-x: hidden;
         }
 
-        /* Header Styles */
-        .header {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
+        body::before {
             content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
 
-        .header-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .header h1 {
-            font-family: 'Merriweather', serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.95;
-            font-weight: 400;
-        }
-
-        /* Navigation */
-        .nav {
-            background: var(--bg-white);
-            padding: 16px 0;
-            box-shadow: var(--shadow-sm);
+        /* Navbar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
             position: sticky;
             top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
 
         .nav-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 2rem;
             display: flex;
-            justify-content: center;
-            gap: 32px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .nav a {
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
         }
 
-        .nav a:hover, .nav a.active {
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a.active {
             color: var(--primary);
-            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 3rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-description {
+            color: var(--text-light);
+            font-size: 1.125rem;
         }
 
         /* Container */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 2rem 4rem;
         }
 
-        /* Message */
-        .message {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        /* Alert Message */
+        .alert {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
             color: white;
-            padding: 16px 24px;
-            border-radius: 8px;
-            margin: 24px 0;
-            box-shadow: var(--shadow-md);
-            font-weight: 500;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            animation: slideDown 0.5s ease-out;
         }
 
-        .message::before {
-            content: '✓';
-            display: inline-block;
-            width: 20px;
-            height: 20px;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-icon {
+            width: 40px;
+            height: 40px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
-            text-align: center;
-            line-height: 20px;
-            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
         }
 
-        /* Form Section */
-        .form-section {
-            background: var(--bg-white);
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: var(--shadow-xl);
-            margin: 32px 0;
+        /* Form Card */
+        .form-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 24px;
             border: 1px solid var(--border);
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
         }
 
-        .form-section h3 {
-            font-family: 'Merriweather', serif;
-            color: var(--primary-dark);
-            margin-bottom: 24px;
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
             font-size: 1.5rem;
             font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: var(--text-light);
+            font-size: 0.95rem;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .form-group {
@@ -191,435 +248,437 @@
             flex-direction: column;
         }
 
-        .form-group label {
+        .form-label {
             font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            color: var(--dark);
             font-size: 0.95rem;
         }
 
-        .form-group input, .form-group select {
-            padding: 12px 16px;
+        .form-input, .form-select {
+            padding: 0.875rem 1.25rem;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
             transition: all 0.3s ease;
-            background: var(--bg-white);
-            appearance: none;
-            background-image: linear-gradient(45deg, transparent 50%, #6b7280 50%);
-            background-position: right 10px center;
-            background-repeat: no-repeat;
-            background-size: 8px 8px;
-            padding-right: 40px;
-            cursor: pointer;
-            font-weight: 500;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            background: white;
         }
 
-        .form-group input:focus, .form-group select:focus {
+        .form-input:hover, .form-select:hover {
+            border-color: var(--primary-light);
+        }
+
+        .form-input:focus, .form-select:focus {
             outline: none;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .form-group select:focus {
-            background-image: linear-gradient(45deg, transparent 50%, #3b82f6 50%);
-        }
-
-        .form-group select:hover {
-            border-color: var(--primary-light);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .form-group select option {
-            padding: 12px 16px;
-            background: var(--bg-white);
-            color: var(--text-primary);
-            font-weight: 500;
-            border: none;
-        }
-
-        .form-group select option:hover {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--primary-light);
-        }
-
-        .form-group select option:checked {
-            background: var(--primary-light);
-            color: white;
-        }
-
-        /* Specific styling for dropdowns in book actions */
-        .book-actions select {
-            width: 200px;
-            margin-right: 12px;
-            margin-bottom: 8px;
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        .book-actions select:focus {
-            outline: none;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .book-actions select:focus {
-            background-image: linear-gradient(45deg, transparent 50%, #3b82f6 50%);
-        }
-
-        .book-actions select:hover {
-            border-color: var(--primary-light);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-
-        /* Force override browser defaults */
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-
-        select::-ms-expand {
-            display: none;
-        }
-
-        select::-webkit-outer-spin-button,
-        select::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
         .btn {
-            padding: 12px 32px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
+            padding: 0.875rem 2rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
-            letter-spacing: 0.5px;
-            margin-right: 8px;
-            margin-bottom: 8px;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
         }
 
-        .btn:hover {
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, var(--success) 0%, #10b981 100%);
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
         }
 
         .btn-success:hover {
-            box-shadow: 0 10px 20px rgba(5, 150, 105, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #ef4444 100%);
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
-            box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(239, 68, 68, 0.4);
         }
 
         /* Content Layout */
-        .content {
+        .content-grid {
             display: grid;
             grid-template-columns: 1fr 2fr;
-            gap: 32px;
-            margin: 32px 0;
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
-        /* Section Headers */
-        .section-header {
-            font-family: 'Merriweather', serif;
-            color: var(--primary-dark);
-            margin-bottom: 24px;
-            font-size: 1.8rem;
+        /* Section */
+        .section-title {
+            font-size: 1.75rem;
             font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
         }
 
-        /* Card Styles */
-        .card {
-            background: var(--bg-white);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: var(--shadow-md);
+        /* Staff Cards */
+        .staff-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .staff-card {
+            background: white;
+            border-radius: 16px;
             border: 1px solid var(--border);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        .card::before {
+        .staff-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-light);
+        }
+
+        .staff-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .staff-info {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Book Cards */
+        .books-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .book-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.3s ease;
+            transition: transform 0.4s ease;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-xl);
-            border-color: var(--primary-light);
-        }
-
-        .card:hover::before {
+        .book-card:hover::before {
             transform: scaleX(1);
         }
 
-        .card h3 {
-            color: var(--primary-dark);
-            margin-bottom: 12px;
-            font-size: 1.25rem;
-            font-weight: 600;
-            font-family: 'Merriweather', serif;
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-light);
         }
 
-        .card p {
-            color: var(--text-secondary);
-            margin-bottom: 8px;
+        .book-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+        }
+
+        .book-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .book-author {
+            color: var(--text-light);
             font-size: 0.95rem;
         }
 
-        /* Status Badge */
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+        .book-body {
+            padding: 1.5rem;
+        }
+
+        .book-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
             font-weight: 600;
-            margin-bottom: 16px;
+            margin-bottom: 1rem;
         }
 
-        .status-badge.available {
-            background: rgba(5, 150, 105, 0.1);
+        .book-status.available {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.15) 100%);
             color: var(--success);
+            border: 2px solid rgba(16, 185, 129, 0.3);
         }
 
-        .status-badge.not-available {
-            background: rgba(220, 38, 38, 0.1);
+        .book-status.unavailable {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.15) 100%);
             color: var(--danger);
+            border: 2px solid rgba(239, 68, 68, 0.3);
         }
 
-        /* Book Actions */
         .book-actions {
-            margin-top: 16px;
-            padding-top: 16px;
+            padding-top: 1rem;
             border-top: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .book-actions form {
-            display: inline-block;
-            margin-right: 8px;
-            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            background: var(--bg-white);
-            border-radius: 12px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 24px;
+            border: 2px dashed var(--border);
         }
 
-        .empty-state h3 {
-            color: var(--text-secondary);
-            margin-bottom: 12px;
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .empty-title {
             font-size: 1.25rem;
-            font-weight: 600;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
         }
 
-        .empty-state p {
-            color: var(--text-secondary);
-            opacity: 0.8;
+        .empty-description {
+            color: var(--text-light);
+            font-size: 0.95rem;
         }
 
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 968px) {
-            .content {
+            .content-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .header h1 {
+            .page-title {
                 font-size: 2rem;
-            }
-
-            .form-section {
-                padding: 24px;
-            }
-
-            .nav-container {
-                gap: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 24px 16px;
-            }
-
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .container {
-                padding: 0 16px;
-            }
-
-            .form-section {
-                padding: 20px 16px;
             }
 
             .form-grid {
                 grid-template-columns: 1fr;
             }
 
-            .btn {
-                width: 100%;
-                margin-right: 0;
+            .nav-links {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-content">
-            <h1>👨‍💼 Staff Administration</h1>
-            <p>Manage library staff and administrative operations</p>
-        </div>
-    </div>
-    
-    <nav class="nav">
+    <!-- Navbar -->
+    <nav class="navbar">
         <div class="nav-container">
-            <a href="index.jsp">🏠 Home</a>
-            <a href="books">📚 Books</a>
-            <a href="students">👨‍🎓 Students</a>
-            <a href="staff" class="active">👨‍💼 Staff</a>
+            <a href="index.jsp" class="logo">
+                <div class="logo-icon">📚</div>
+                LibraryHub
+            </a>
+            <div class="nav-links">
+                <a href="index.jsp">Home</a>
+                <a href="books">Books</a>
+                <a href="students">Students</a>
+                <a href="staff" class="active">Staff</a>
+            </div>
         </div>
     </nav>
 
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">👨‍💼 Staff Administration</h1>
+        <p class="page-description">Manage library staff and administrative operations</p>
+    </div>
+
+    <!-- Main Container -->
     <div class="container">
+        <!-- Alert Message -->
         <% if (request.getAttribute("message") != null) { %>
-            <div class="message">
-                <%= request.getAttribute("message") %>
+            <div class="alert">
+                <div class="alert-icon">✓</div>
+                <div><%= request.getAttribute("message") %></div>
             </div>
         <% } %>
 
-        <div class="form-section">
-            <h3>Add New Staff Member</h3>
+        <!-- Add Staff Form -->
+        <div class="form-card">
+            <div class="form-header">
+                <h2 class="form-title">Add New Staff Member</h2>
+                <p class="form-subtitle">Register a new staff member to the library system</p>
+            </div>
             <form action="staff" method="post">
                 <input type="hidden" name="action" value="add">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="name">Staff Name</label>
-                        <input type="text" id="name" name="name" required placeholder="Enter staff name">
+                        <label class="form-label" for="name">Staff Name</label>
+                        <input type="text" id="name" name="name" class="form-input" required placeholder="Enter staff name">
                     </div>
                     <div class="form-group">
-                        <label for="id">Staff ID</label>
-                        <input type="number" id="id" name="id" required placeholder="Enter staff ID">
+                        <label class="form-label" for="id">Staff ID</label>
+                        <input type="number" id="id" name="id" class="form-input" required placeholder="Enter staff ID">
                     </div>
                 </div>
-                <button type="submit" class="btn">➕ Add Staff Member</button>
+                <button type="submit" class="btn btn-primary">➕ Add Staff Member</button>
             </form>
         </div>
 
-        <div class="content">
-            <div class="section">
-                <h3 class="section-header">Staff Members</h3>
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Staff Section -->
+            <div>
+                <h2 class="section-title">Staff Members</h2>
                 <% 
                 List<Staff> staffMembers = (List<Staff>) request.getAttribute("staffMembers");
                 if (staffMembers != null && !staffMembers.isEmpty()) {
-                    for (Staff staff : staffMembers) {
                 %>
-                    <div class="card">
-                        <h3><%= staff.getName() %></h3>
-                        <p><strong>ID:</strong> <%= staff.getId() %></p>
-                        <p><strong>Role:</strong> Library Administrator</p>
+                    <div class="staff-list">
+                        <% for (Staff staff : staffMembers) { %>
+                            <div class="staff-card">
+                                <div class="staff-name"><%= staff.getName() %></div>
+                                <div class="staff-info"><strong>ID:</strong> <%= staff.getUserId() %></div>
+                                <div class="staff-info"><strong>Role:</strong> Library Administrator</div>
+                            </div>
+                        <% } %>
                     </div>
-                <% 
-                    }
-                } else {
-                %>
+                <% } else { %>
                     <div class="empty-state">
-                        <h3>👨‍💼 No Staff Members</h3>
-                        <p>Add your first staff member to manage library operations.</p>
+                        <div class="empty-icon">👨‍💼</div>
+                        <h3 class="empty-title">No Staff Members</h3>
+                        <p class="empty-description">Add your first staff member to get started</p>
                     </div>
                 <% } %>
             </div>
 
-            <div class="section">
-                <h3 class="section-header">Book Management</h3>
+            <!-- Books Section -->
+            <div>
+                <h2 class="section-title">Book Management</h2>
                 <% 
                 List<Book> books = (List<Book>) request.getAttribute("books");
                 if (books != null && !books.isEmpty()) {
-                    for (int i = 0; i < books.size(); i++) {
-                        Book book = books.get(i);
                 %>
-                    <div class="card">
-                        <h3><%= book.getTitle() %></h3>
-                        <p><strong>Author:</strong> <%= book.getAuthor() %></p>
-                        <span class="status-badge <%= book.isAvailable() ? "available" : "not-available" %>">
-                            <%= book.isAvailable() ? "✓ Available" : "✗ Not Available" %>
-                        </span>
-                        <% if (staffMembers != null && !staffMembers.isEmpty()) { %>
-                            <div class="book-actions">
-                                <form action="staff" method="post">
-                                    <input type="hidden" name="action" value="manage">
-                                    <input type="hidden" name="bookId" value="<%= i %>">
-                                    <input type="hidden" name="add" value="true">
-                                    <select name="staffId" required>
-                                        <% for (int j = 0; j < staffMembers.size(); j++) { %>
-                                            <option value="<%= j %>"><%= staffMembers.get(j).getName() %></option>
-                                        <% } %>
-                                    </select>
-                                    <button type="submit" class="btn btn-success">📥 Add to Library</button>
-                                </form>
-                                <form action="staff" method="post">
-                                    <input type="hidden" name="action" value="manage">
-                                    <input type="hidden" name="bookId" value="<%= i %>">
-                                    <input type="hidden" name="add" value="false">
-                                    <select name="staffId" required>
-                                        <% for (int j = 0; j < staffMembers.size(); j++) { %>
-                                            <option value="<%= j %>"><%= staffMembers.get(j).getName() %></option>
-                                        <% } %>
-                                    </select>
-                                    <button type="submit" class="btn btn-danger">📤 Remove from Library</button>
-                                </form>
+                    <div class="books-list">
+                        <% for (int i = 0; i < books.size(); i++) {
+                            Book book = books.get(i);
+                        %>
+                            <div class="book-card">
+                                <div class="book-header">
+                                    <div class="book-title"><%= book.getTitle() %></div>
+                                    <div class="book-author">✍️ <%= book.getAuthor() %></div>
+                                </div>
+                                <div class="book-body">
+                                    <div class="book-status <%= book.isAvailable() ? "available" : "unavailable" %>">
+                                        <span><%= book.isAvailable() ? "✓" : "✗" %></span>
+                                        <span><%= book.isAvailable() ? "Available" : "Not Available" %></span>
+                                    </div>
+                                    <% if (staffMembers != null && !staffMembers.isEmpty()) { %>
+                                        <div class="book-actions">
+                                            <form action="staff" method="post">
+                                                <input type="hidden" name="action" value="manage">
+                                                <input type="hidden" name="bookId" value="<%= i %>">
+                                                <input type="hidden" name="add" value="true">
+                                                <select name="staffId" class="form-select" required style="width: 200px;">
+                                                    <% for (int j = 0; j < staffMembers.size(); j++) { %>
+                                                        <option value="<%= j %>"><%= staffMembers.get(j).getName() %></option>
+                                                    <% } %>
+                                                </select>
+                                                <button type="submit" class="btn btn-success">📥 Add to Library</button>
+                                            </form>
+                                            <form action="staff" method="post">
+                                                <input type="hidden" name="action" value="manage">
+                                                <input type="hidden" name="bookId" value="<%= i %>">
+                                                <input type="hidden" name="add" value="false">
+                                                <select name="staffId" class="form-select" required style="width: 200px;">
+                                                    <% for (int j = 0; j < staffMembers.size(); j++) { %>
+                                                        <option value="<%= j %>"><%= staffMembers.get(j).getName() %></option>
+                                                    <% } %>
+                                                </select>
+                                                <button type="submit" class="btn btn-danger">📤 Remove from Library</button>
+                                            </form>
+                                        </div>
+                                    <% } %>
+                                </div>
                             </div>
                         <% } %>
                     </div>
-                <% 
-                    }
-                } else {
-                %>
+                <% } else { %>
                     <div class="empty-state">
-                        <h3>📚 No Books Available</h3>
-                        <p>Add books to the library to enable management operations.</p>
+                        <div class="empty-icon">📚</div>
+                        <h3 class="empty-title">No Books Available</h3>
+                        <p class="empty-description">Add books to enable management operations</p>
                     </div>
                 <% } %>
             </div>

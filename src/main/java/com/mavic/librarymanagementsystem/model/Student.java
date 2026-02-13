@@ -1,14 +1,19 @@
 package com.mavic.librarymanagementsystem.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "students")
 public class Student extends Person {
+    @Column(nullable = false)
     private String department;
     
     public Student() {
         super();
     }
     
-    public Student(String name, int id, String department) {
-        super(name, id);
+    public Student(String name, int userId, String department) {
+        super(name, userId);
         this.department = department;
     }
     
@@ -38,7 +43,7 @@ public class Student extends Person {
     public String toString() {
         return "Student{" +
                 "name='" + name + '\'' +
-                ", id=" + id +
+                ", userId=" + userId +
                 ", department='" + department + '\'' +
                 '}';
     }

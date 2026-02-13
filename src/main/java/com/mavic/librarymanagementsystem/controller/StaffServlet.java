@@ -4,7 +4,7 @@ import com.mavic.librarymanagementsystem.dao.BookDAO;
 import com.mavic.librarymanagementsystem.dao.StaffDAO;
 import com.mavic.librarymanagementsystem.model.Book;
 import com.mavic.librarymanagementsystem.model.Staff;
-import com.mavic.librarymanagementsystem.util.DatabaseUtil;
+import com.mavic.librarymanagementsystem.util.HibernateUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,7 +21,8 @@ public class StaffServlet extends HttpServlet {
     
     @Override
     public void init() {
-        DatabaseUtil.initializeDatabase();
+        // Initialize Hibernate SessionFactory
+        HibernateUtil.getSessionFactory();
         staffDAO = new StaffDAO();
         bookDAO = new BookDAO();
     }
@@ -29,23 +30,70 @@ public class StaffServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        try {
+            List<Staff> staffMembers = staffDAO.getAllStaff();
+            List<Book> books = bookDAO.getAllBooks();
+            request.setAttribute("staffMembers", staffMembers);
+            request.setAttribute("books", books);
+            request.getRequestDispatcher("/staff.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error loading data: " + e.getMessage());
+            request.getRequestDispatcher("/staff.jsp").forward(request, response);
+        }
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
         String action = request.getParameter("action");
         
-        if ("manage".equals(action)) {
-            int staffId = Integer.parseInt(request.getParameter("staffId"));
-            int bookId = Integer.parseInt(request.getParameter("bookId"));
-            boolean add = Boolean.parseBoolean(request.getParameter("add"));
-            
-            Staff staff = staffDAO.getStaffById(staffId);
-            Book book = bookDAO.getBookById(bookId);
-            
-            if (staff != null && book != null) {
-                staff.manageBook(book, add);
-                bookDAO.updateBookAvailability(bookId, book.isAvailable());
-                request.setAttribute("message", "Book management operation completed!");
+        try {
+            if ("add".equals(action)) {
+                String name = request.getParameter("name");
+                String idParam = request.getParameter("id");
+                
+                if (name != null && !name.trim().isEmpty() && idParam != null) {
+                    int userId = Integer.parseInt(idParam);
+                    Staff newStaff = new Staff(name.trim(), userId);
+                    staffDAO.addStaff(newStaff);
+                    request.setAttribute("message", "Staff member '" + name + "' added successfully!");
+                } else {
+                    request.setAttribute("error", "Name and ID are required!");
+                }
+            } else if ("manage".equals(action)) {
+                String staffIdParam = request.getParameter("staffId");
+                String bookIdParam = request.getParameter("bookId");
+                String addParam = request.getParameter("add");
+                
+                if (staffIdParam != null && bookIdParam != null && addParam != null) {
+                    List<Staff> staffMembers = staffDAO.getAllStaff();
+                    List<Book> books = bookDAO.getAllBooks();
+                    
+                    int staffIndex = Integer.parseInt(staffIdParam);
+                    int bookIndex = Integer.parseInt(bookIdParam);
+                    boolean add = Boolean.parseBoolean(addParam);
+                    
+                    if (staffIndex >= 0 && staffIndex < staffMembers.size() &&
+                        bookIndex >= 0 && bookIndex < books.size()) {
+                        
+                        Staff staff = staffMembers.get(staffIndex);
+                        Book book = books.get(bookIndex);
+                        
+                        staff.manageBook(book, add);
+                        bookDAO.updateBook(book);
+                        
+                        String operation = add ? "added to" : "removed from";
+                        request.setAttribute("message", "Book '" + book.getTitle() + "' " + operation + " library by " + staff.getName());
+                    }
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error: " + e.getMessage());
         }
         
+        // Reload data and forward
         List<Staff> staffMembers = staffDAO.getAllStaff();
         List<Book> books = bookDAO.getAllBooks();
         request.setAttribute("staffMembers", staffMembers);
@@ -54,27 +102,7 @@ public class StaffServlet extends HttpServlet {
     }
     
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        String action = request.getParameter("action");
-        
-        if ("add".equals(action)) {
-            String name = request.getParameter("name");
-            int id = Integer.parseInt(request.getParameter("id"));
-            
-            Staff newStaff = new Staff(name, id);
-            staffDAO.addStaff(newStaff);
-            request.setAttribute("message", "Staff member added successfully!");
-        }
-        
-        List<Staff> staffMembers = staffDAO.getAllStaff();
-        List<Book> books = bookDAO.getAllBooks();
-        request.setAttribute("staffMembers", staffMembers);
-        request.setAttribute("books", books);
-        request.getRequestDispatcher("/staff.jsp").forward(request, response);
-    }
-    
-    public List<Staff> getStaffMembers() {
-        return staffDAO.getAllStaff();
+    public void destroy() {
+        HibernateUtil.shutdown();
     }
 }

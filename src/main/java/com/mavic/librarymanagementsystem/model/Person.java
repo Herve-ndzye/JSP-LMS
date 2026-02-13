@@ -1,14 +1,32 @@
 package com.mavic.librarymanagementsystem.model;
 
-public class Person {
+import jakarta.persistence.*;
+
+@MappedSuperclass
+public abstract class Person {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
+    
+    @Column(nullable = false)
     protected String name;
-    protected int id;
+    
+    @Column(name = "user_id", unique = true)
+    protected Integer userId;
     
     public Person() {
     }
     
-    public Person(String name, int id) {
+    public Person(String name, Integer userId) {
         this.name = name;
+        this.userId = userId;
+    }
+    
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
         this.id = id;
     }
     
@@ -20,19 +38,20 @@ public class Person {
         this.name = name;
     }
     
-    public int getId() {
-        return id;
+    public int getUserId() {
+        return userId != null ? userId : 0;
     }
     
-    public void setId(int id) {
-        this.id = id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
     
     @Override
     public String toString() {
         return "Person{" +
-                "name='" + name + '\'' +
-                ", id=" + id +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", userId=" + userId +
                 '}';
     }
 }

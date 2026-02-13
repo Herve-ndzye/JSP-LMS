@@ -1,98 +1,164 @@
 package com.mavic.librarymanagementsystem.dao;
 
 import com.mavic.librarymanagementsystem.model.Staff;
-import com.mavic.librarymanagementsystem.util.DatabaseUtil;
+import com.mavic.librarymanagementsystem.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StaffDAO {
     
     public List<Staff> getAllStaff() {
-        List<Staff> staffMembers = new ArrayList<>();
-        String sql = "SELECT * FROM staff";
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            
-            while (rs.next()) {
-                Staff staff = new Staff(rs.getString("name"), rs.getInt("id"));
-                staffMembers.add(staff);
-            }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving staff members", e);
-        }
-        
-        return staffMembers;
-    }
-    
-    public Staff getStaffById(int id) {
-        String sql = "SELECT * FROM staff WHERE id = ?";
-        
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, id);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Staff(rs.getString("name"), rs.getInt("id"));
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            List<Staff> staffMembers = session.createQuery("FROM Staff", Staff.class).list();
+            transaction.commit();
+            return staffMembers;
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
                 }
             }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving staff member", e);
+            System.err.println("Error retrieving staff members: " + e.getMessage());
+            return new ArrayList<>();
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
+    }
+    
+    public Staff getStaffById(Long id) {
+        Session session = null;
+        Transaction transaction = null;
         
-        return null;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Staff staff = session.get(Staff.class, id);
+            transaction.commit();
+            return staff;
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error retrieving staff member: " + e.getMessage());
+            return null;
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
+        }
     }
     
     public void addStaff(Staff staff) {
-        String sql = "INSERT INTO staff (id, name) VALUES (?, ?)";
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, staff.getId());
-            pstmt.setString(2, staff.getName());
-            
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error adding staff member", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            session.persist(staff);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error adding staff member: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
     
     public void updateStaff(Staff staff) {
-        String sql = "UPDATE staff SET name = ? WHERE id = ?";
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, staff.getName());
-            pstmt.setInt(2, staff.getId());
-            
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating staff member", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            session.merge(staff);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error updating staff member: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
     
-    public void deleteStaff(int id) {
-        String sql = "DELETE FROM staff WHERE id = ?";
+    public void deleteStaff(Long id) {
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error deleting staff member", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Staff staff = session.get(Staff.class, id);
+            if (staff != null) {
+                session.remove(staff);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error deleting staff member: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
 }

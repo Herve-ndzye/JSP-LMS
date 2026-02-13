@@ -1,8 +1,21 @@
 package com.mavic.librarymanagementsystem.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "books")
 public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
     private String title;
+    
+    @Column(nullable = false)
     private String author;
+    
+    @Column(name = "is_available")
     private boolean isAvailable;
     
     public Book() {
@@ -13,6 +26,14 @@ public class Book {
         this.title = title;
         this.author = author;
         this.isAvailable = true;
+    }
+    
+    public Long getId() {
+        return id;
+    }
+    
+    public void setId(Long id) {
+        this.id = id;
     }
     
     public String getTitle() {
@@ -42,7 +63,8 @@ public class Book {
     @Override
     public String toString() {
         return "Book{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", isAvailable=" + isAvailable +
                 '}';

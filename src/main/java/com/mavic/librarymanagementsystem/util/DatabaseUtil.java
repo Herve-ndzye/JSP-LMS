@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseUtil {
-    private static final String DB_URL = "jdbc:mysql://localhost:3030/librarydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
-    private static final String DB_USER = "user";
+    private static final String DB_URL = "jdbc:mysql://localhost:3000/librarydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "admin@123";
     
     static {
@@ -65,8 +65,9 @@ public class DatabaseUtil {
         try {
             // Check if books table is empty
             //noinspection SqlDialectInspection
-            boolean booksEmpty = stmt.executeQuery("SELECT COUNT(*) FROM books").next() && 
-                               stmt.executeQuery("SELECT COUNT(*) FROM books").getInt(1) == 0;
+            java.sql.ResultSet booksRs = stmt.executeQuery("SELECT COUNT(*) FROM books");
+            booksRs.next();
+            boolean booksEmpty = booksRs.getInt(1) == 0;
             
             if (booksEmpty) {
                 //noinspection SqlDialectInspection
@@ -79,8 +80,9 @@ public class DatabaseUtil {
             
             // Check if students table is empty
             //noinspection SqlDialectInspection
-            boolean studentsEmpty = stmt.executeQuery("SELECT COUNT(*) FROM students").next() && 
-                                   stmt.executeQuery("SELECT COUNT(*) FROM students").getInt(1) == 0;
+            java.sql.ResultSet studentsRs = stmt.executeQuery("SELECT COUNT(*) FROM students");
+            studentsRs.next();
+            boolean studentsEmpty = studentsRs.getInt(1) == 0;
             
             if (studentsEmpty) {
                 //noinspection SqlDialectInspection
@@ -92,8 +94,9 @@ public class DatabaseUtil {
             
             // Check if staff table is empty
             //noinspection SqlDialectInspection
-            boolean staffEmpty = stmt.executeQuery("SELECT COUNT(*) FROM staff").next() && 
-                               stmt.executeQuery("SELECT COUNT(*) FROM staff").getInt(1) == 0;
+            java.sql.ResultSet staffRs = stmt.executeQuery("SELECT COUNT(*) FROM staff");
+            staffRs.next();
+            boolean staffEmpty = staffRs.getInt(1) == 0;
             
             if (staffEmpty) {
                 //noinspection SqlDialectInspection

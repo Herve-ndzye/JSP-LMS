@@ -1,102 +1,198 @@
 package com.mavic.librarymanagementsystem.dao;
 
 import com.mavic.librarymanagementsystem.model.Book;
-import com.mavic.librarymanagementsystem.util.DatabaseUtil;
+import com.mavic.librarymanagementsystem.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookDAO {
     
     public List<Book> getAllBooks() {
-        List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books";
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            
-            while (rs.next()) {
-                Book book = new Book(rs.getString("title"), rs.getString("author"));
-                book.setAvailable(rs.getBoolean("is_available"));
-                books.add(book);
-            }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving books", e);
-        }
-        
-        return books;
-    }
-    
-    public Book getBookById(int id) {
-        String sql = "SELECT * FROM books WHERE id = ?";
-        
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, id);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    Book book = new Book(rs.getString("title"), rs.getString("author"));
-                    book.setAvailable(rs.getBoolean("is_available"));
-                    return book;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            List<Book> books = session.createQuery("FROM Book", Book.class).list();
+            transaction.commit();
+            return books;
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
                 }
             }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving book", e);
+            System.err.println("Error retrieving books: " + e.getMessage());
+            return new ArrayList<>();
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
+    }
+    
+    public Book getBookById(Long id) {
+        Session session = null;
+        Transaction transaction = null;
         
-        return null;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Book book = session.get(Book.class, id);
+            transaction.commit();
+            return book;
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error retrieving book: " + e.getMessage());
+            return null;
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
+        }
     }
     
     public void addBook(Book book) {
-        String sql = "INSERT INTO books (title, author, is_available) VALUES (?, ?, ?)";
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, book.getTitle());
-            pstmt.setString(2, book.getAuthor());
-            pstmt.setBoolean(3, book.isAvailable());
-            
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error adding book", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            session.persist(book);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error adding book: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
     
-    public void updateBookAvailability(int id, boolean available) {
-        String sql = "UPDATE books SET is_available = ? WHERE id = ?";
+    public void updateBook(Book book) {
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setBoolean(1, available);
-            pstmt.setInt(2, id);
-            
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating book availability", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            session.merge(book);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error updating book: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
     
-    public void deleteBook(int id) {
-        String sql = "DELETE FROM books WHERE id = ?";
+    public void updateBookAvailability(Long id, boolean available) {
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error deleting book", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Book book = session.get(Book.class, id);
+            if (book != null) {
+                book.setAvailable(available);
+                session.merge(book);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error updating book availability: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
+        }
+    }
+    
+    public void deleteBook(Long id) {
+        Session session = null;
+        Transaction transaction = null;
+        
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Book book = session.get(Book.class, id);
+            if (book != null) {
+                session.remove(book);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error deleting book: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
 }

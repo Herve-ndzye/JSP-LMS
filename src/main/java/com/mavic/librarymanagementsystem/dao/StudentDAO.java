@@ -1,100 +1,164 @@
 package com.mavic.librarymanagementsystem.dao;
 
 import com.mavic.librarymanagementsystem.model.Student;
-import com.mavic.librarymanagementsystem.util.DatabaseUtil;
+import com.mavic.librarymanagementsystem.util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StudentDAO {
     
     public List<Student> getAllStudents() {
-        List<Student> students = new ArrayList<>();
-        String sql = "SELECT * FROM students";
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            
-            while (rs.next()) {
-                Student student = new Student(rs.getString("name"), rs.getInt("id"), rs.getString("department"));
-                students.add(student);
-            }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving students", e);
-        }
-        
-        return students;
-    }
-    
-    public Student getStudentById(int id) {
-        String sql = "SELECT * FROM students WHERE id = ?";
-        
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, id);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Student(rs.getString("name"), rs.getInt("id"), rs.getString("department"));
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            List<Student> students = session.createQuery("FROM Student", Student.class).list();
+            transaction.commit();
+            return students;
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
                 }
             }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error retrieving student", e);
+            System.err.println("Error retrieving students: " + e.getMessage());
+            return new ArrayList<>();
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
+    }
+    
+    public Student getStudentById(Long id) {
+        Session session = null;
+        Transaction transaction = null;
         
-        return null;
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Student student = session.get(Student.class, id);
+            transaction.commit();
+            return student;
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error retrieving student: " + e.getMessage());
+            return null;
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
+        }
     }
     
     public void addStudent(Student student) {
-        String sql = "INSERT INTO students (id, name, department) VALUES (?, ?, ?)";
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, student.getId());
-            pstmt.setString(2, student.getName());
-            pstmt.setString(3, student.getDepartment());
-            
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error adding student", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            session.persist(student);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error adding student: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
     
     public void updateStudent(Student student) {
-        String sql = "UPDATE students SET name = ?, department = ? WHERE id = ?";
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, student.getName());
-            pstmt.setString(2, student.getDepartment());
-            pstmt.setInt(3, student.getId());
-            
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating student", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            session.merge(student);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error updating student: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
     
-    public void deleteStudent(int id) {
-        String sql = "DELETE FROM students WHERE id = ?";
+    public void deleteStudent(Long id) {
+        Session session = null;
+        Transaction transaction = null;
         
-        try (Connection conn = DatabaseUtil.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Error deleting student", e);
+        try {
+            session = HibernateUtil.getSessionFactory().openSession();
+            transaction = session.beginTransaction();
+            Student student = session.get(Student.class, id);
+            if (student != null) {
+                session.remove(student);
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback();
+                } catch (Exception rollbackEx) {
+                    System.err.println("Error rolling back transaction: " + rollbackEx.getMessage());
+                }
+            }
+            System.err.println("Error deleting student: " + e.getMessage());
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception closeEx) {
+                    System.err.println("Error closing session: " + closeEx.getMessage());
+                }
+            }
         }
     }
 }

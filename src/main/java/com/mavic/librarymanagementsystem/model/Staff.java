@@ -1,13 +1,17 @@
 package com.mavic.librarymanagementsystem.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "staff")
 public class Staff extends Person {
     
     public Staff() {
         super();
     }
     
-    public Staff(String name, int id) {
-        super(name, id);
+    public Staff(String name, int userId) {
+        super(name, userId);
     }
     
     public void manageBook(Book book, boolean add) {
@@ -24,7 +28,7 @@ public class Staff extends Person {
     public String toString() {
         return "Staff{" +
                 "name='" + name + '\'' +
-                ", id=" + id +
+                ", userId=" + userId +
                 '}';
     }
 }

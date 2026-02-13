@@ -2,7 +2,7 @@ package com.mavic.librarymanagementsystem.controller;
 
 import com.mavic.librarymanagementsystem.dao.BookDAO;
 import com.mavic.librarymanagementsystem.model.Book;
-import com.mavic.librarymanagementsystem.util.DatabaseUtil;
+import com.mavic.librarymanagementsystem.util.HibernateUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,24 +18,21 @@ public class BookServlet extends HttpServlet {
     
     @Override
     public void init() {
-        DatabaseUtil.initializeDatabase();
+        // Initialize Hibernate SessionFactory
+        HibernateUtil.getSessionFactory();
         bookDAO = new BookDAO();
     }
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        String action = request.getParameter("action");
-        
-        if ("view".equals(action)) {
-            int bookId = Integer.parseInt(request.getParameter("id"));
-            Book book = bookDAO.getBookById(bookId);
-            request.setAttribute("book", book);
-            request.getRequestDispatcher("/book-details.jsp").forward(request, response);
-        } else {
-            // Show all books
+        try {
             List<Book> books = bookDAO.getAllBooks();
             request.setAttribute("books", books);
+            request.getRequestDispatcher("/books.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error loading books: " + e.getMessage());
             request.getRequestDispatcher("/books.jsp").forward(request, response);
         }
     }
@@ -45,27 +42,47 @@ public class BookServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         
-        if ("add".equals(action)) {
-            String title = request.getParameter("title");
-            String author = request.getParameter("author");
-            Book newBook = new Book(title, author);
-            bookDAO.addBook(newBook);
-            request.setAttribute("message", "Book added successfully!");
-        } else if ("toggleAvailability".equals(action)) {
-            int bookId = Integer.parseInt(request.getParameter("id"));
-            Book book = bookDAO.getBookById(bookId);
-            if (book != null) {
-                bookDAO.updateBookAvailability(bookId, !book.isAvailable());
-                request.setAttribute("message", "Book availability updated!");
+        try {
+            if ("add".equals(action)) {
+                String title = request.getParameter("title");
+                String author = request.getParameter("author");
+                
+                if (title != null && !title.trim().isEmpty() && 
+                    author != null && !author.trim().isEmpty()) {
+                    Book newBook = new Book(title.trim(), author.trim());
+                    bookDAO.addBook(newBook);
+                    request.setAttribute("message", "Book '" + title + "' added successfully!");
+                } else {
+                    request.setAttribute("error", "Title and author are required!");
+                }
+            } else if ("toggleAvailability".equals(action)) {
+                String idParam = request.getParameter("id");
+                if (idParam != null) {
+                    // Get book by index from the list
+                    List<Book> books = bookDAO.getAllBooks();
+                    int index = Integer.parseInt(idParam);
+                    
+                    if (index >= 0 && index < books.size()) {
+                        Book book = books.get(index);
+                        book.setAvailable(!book.isAvailable());
+                        bookDAO.updateBook(book);
+                        request.setAttribute("message", "Book availability updated!");
+                    }
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("error", "Error: " + e.getMessage());
         }
         
+        // Reload books and forward
         List<Book> books = bookDAO.getAllBooks();
         request.setAttribute("books", books);
         request.getRequestDispatcher("/books.jsp").forward(request, response);
     }
     
-    public List<Book> getBooks() {
-        return bookDAO.getAllBooks();
+    @Override
+    public void destroy() {
+        HibernateUtil.shutdown();
     }
 }
